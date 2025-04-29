@@ -1,0 +1,114 @@
+{% extends 'simulator/base.html' %}
+
+{% block title %}Турнір: {{ tournament.name }}{% endblock %}
+
+{% block content %}
+<h2>{{ tournament.name }}</h2>
+{% if tournament.event %}
+<p><strong>Частина події:</strong> <a href="{% url 'simulator:event_detail' tournament.event.id %}">{{ tournament.event.name }}</a></p>
+{% endif %}
+
+{# Форма для генерації розкладу #}
+<div style="border: 1px solid #ccc; padding: 15px; margin-bottom: 20px; background-color: #f9f9f9;">
+    <h4>Генерація розкладу</h4>
+    <form action="{% url 'simulator:tournament_generate_schedule' tournament.id %}" method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="id_start_date">Дата початку матчів:</label>
+            <input type="date" name="start_date" id="id_start_date" required>
+        </div>
+        <div class="form-group">
+            <label for="id_strategy">Стратегія:</label>
+            <select name="strategy" id="id_strategy">
+                <option value="round_robin" selected>Коловий турнір (Round Robin)</option>
+                <option value="knockout">Олімпійська система (Knockout - 1 раунд)</option>
+            </select>
+        </div>
+        <button type="submit" class="btn">Згенерувати розклад</button>
+    </form>
+</div>
+
+
+<h3>Команди-учасниці</h3>
+{% if tournament.teams.all %}
+    <ul>
+        {% for team in tournament.teams.all %}
+        <li><a href="{% url 'simulator:team_detail' team.id %}">{{ team.name }}</a></li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>Команди ще не додані до цього турніру.</p>
+{% endif %}
+
+<h3>Матчі турніру</h3>
+{% with matches=tournament.matches.all %} {# Отримуємо матчі один раз #}
+    {% if matches %}
+        <table>
+             <thead>
+                 <tr>
+                     <th>Дата</th>
+                     <th>Команда 1</th>
+                     <th>Рахунок</th>
+                     <th>Команда 2</th>
+                     <th>Статус</th>
+                     <th>Дії</th>
+                 </tr>
+             </thead>
+             <tbody>
+                {% for match in matches %}
+                <tr>
+                    <td>{{ match.match_datetime|date:"Y-m-d H:i" }}</td>
+                    <td><a href="{% url 'simulator:team_detail' match.team1.id %}">{{ match.team1.name }}</a></td>
+                    <td>
+                        {% if match.status == match.STATUS_FINISHED %}
+                            {{ match.score1 }} - {{ match.score2 }}
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+                    <td><a href="{% url 'simulator:team_detail' match.team2.id %}">{{ match.team2.name }}</a></td>
+                    <td>{{ match.get_status_display }}</td>
+                    <td>
+                        <a href="{% url 'simulator:match_detail' match.id %}" class="btn">Деталі матчу</a>
+                        {% if match.status == match.STATUS_SCHEDULED %}
+                            <a href="{% url 'simulator:match_record_result' match.id %}" class="btn" style="background-color: #28a745; font-size: 0.8em; padding: 5px 8px;">Записати рез.</a>
+                            <form method="post" action="{% url 'simulator:match_simulate' match.id %}" style="display: inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn" style="background-color: #ffc107; color: #333; font-size: 0.8em; padding: 5px 8px;" onclick="return confirm('Симулювати результат?');">
+                                    Симулювати
+                                </button>
+                            </form>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+             </tbody>
+        </table>
+    {% else %}
+        <p>У турнірі ще немає матчів.</p>
+    {% endif %}
+{% endwith %}
+
+<h3>Турнірна таблиця</h3>
+<p><a href="{% url 'simulator:tournament_standings' tournament.id %}" class="btn" style="background-color: #ffc107; color: #333;">Переглянути повну таблицю</a></p>
+{# Можна вивести скорочену таблицю прямо тут, використовуючи дані з tournament.standings #}
+{% if tournament.standings.table %}
+    <h4>Топ-3 команд:</h4>
+    <ol>
+    {% for entry in tournament.standings.table|slice:":3" %}
+        <li>{{ entry.team_name }} ({{ entry.points }} очок)</li>
+    {% endfor %}
+    </ol>
+{% else %}
+    <p>Таблиця ще не розрахована.</p>
+{% endif %}
+
+
+<br><br>
+<a href="{% url 'simulator:tournament_list' %}" class="btn">До списку турнірів</a>
+{% if tournament.event %}
+    <a href="{% url 'simulator:event_detail' tournament.event.id %}" class="btn" style="background-color: #6c757d;">До події</a>
+{% endif %}
+<a href="{% url 'simulator:tournament_update' tournament.id %}" class="btn">Редагувати турнір</a>
+
+{% endblock %}

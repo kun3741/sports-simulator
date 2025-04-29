@@ -1,0 +1,39 @@
+{% extends 'simulator/base.html' %}
+
+{% block title %}Список Турнірів{% endblock %}
+
+{% block content %}
+<h2>Турніри</h2>
+
+<a href="{% url 'simulator:tournament_create' %}" class="btn" style="margin-bottom: 15px;">+ Додати новий турнір</a>
+{% if tournaments %}
+    <table>
+        <thead>
+            <tr>
+                <th>Назва</th>
+                <th>Подія</th>
+                <th>К-ть команд</th>
+                <th>К-ть матчів</th>
+                <th>Дії</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for tournament in tournaments %}
+            <tr>
+                <td><a href="{% url 'simulator:tournament_detail' tournament.id %}">{{ tournament.name }}</a></td>
+                <td>{% if tournament.event %}<a href="{% url 'simulator:event_detail' tournament.event.id %}">{{ tournament.event.name }}</a>{% else %}N/A{% endif %}</td>
+                <td>{{ tournament.teams.count }}</td>
+                <td>{{ tournament.matches.count }}</td> {# Ефективніше передати з view #}
+                <td>
+                    <a href="{% url 'simulator:tournament_detail' tournament.id %}" class="btn">Деталі</a>
+                    <a href="{% url 'simulator:tournament_standings' tournament.id %}" class="btn" style="background-color: #ffc107; color: #333;">Таблиця</a>
+                    {# Додати редагування/видалення, якщо потрібно #}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <p>Ще немає жодного турніру.</p>
+{% endif %}
+{% endblock %}

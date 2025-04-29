@@ -1,0 +1,23 @@
+{% extends 'simulator/base.html' %}
+
+{% block title %}Рекомендації для {{ team.name }}{% endblock %}
+
+{% block content %}
+<h2>Рекомендації для команди: {{ team.name }}</h2>
+
+{% if recommendations %}
+    <ul>
+        {% for rec in recommendations %}
+            {% if rec %} {# Показуємо тільки не порожні рядки #}
+                <li>{{ rec|slice:"2:" }}</li> {# Видаляємо початковий "- " #}
+            {% endif %}
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>Не вдалося згенерувати рекомендації або їх немає.</p>
+{% endif %}
+<br>
+<a href="{% url 'simulator:team_detail' team.id %}" class="btn">Назад до команди</a>
+<a href="{% url 'simulator:team_list' %}" class="btn" style="background-color: #6c757d;">До списку команд</a>
+
+{% endblock %}

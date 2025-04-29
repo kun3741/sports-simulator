@@ -1,0 +1,46 @@
+{% extends 'simulator/base.html' %}
+
+{% block title %}Турнірна таблиця - {{ tournament.name }}{% endblock %}
+
+{% block content %}
+<h2>Турнірна таблиця: {{ tournament.name }}</h2>
+
+{% if standings %}
+<table class="standings-table">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Команда</th>
+            <th>І</th> {# Зіграно ігор #}
+            <th>В</th> {# Виграші #}
+            <th>Н</th> {# Нічиї #}
+            <th>П</th> {# Поразки #}
+            <th>ЗМ</th> {# Забиті м'ячі #}
+            <th>ПМ</th> {# Пропущені м'ячі #}
+            <th>РМ</th> {# Різниця м'ячів #}
+            <th>О</th> {# Очки #}
+        </tr>
+    </thead>
+    <tbody>
+        {% for entry in standings %} 
+        <tr>
+            <td>{{ forloop.counter }}</td>
+            <td><a href="{% url 'simulator:team_detail' entry.team.id %}">{{ entry.team.name }}</a></td>
+            <td>{{ entry.played }}</td>
+            <td>{{ entry.won }}</td>
+            <td>{{ entry.drawn }}</td>
+            <td>{{ entry.lost }}</td>
+            <td>{{ entry.gf }}</td>
+            <td>{{ entry.ga }}</td>
+            <td>{{ entry.gd }}</td>
+            <td><b>{{ entry.points }}</b></td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p>Турнірна таблиця ще не сформована або немає даних.</p>
+{% endif %}
+<br>
+<p><a href="{% url 'simulator:tournament_detail' tournament.id %}" class="btn">Назад до турніру</a></p>
+{% endblock %}

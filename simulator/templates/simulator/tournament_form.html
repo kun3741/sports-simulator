@@ -1,0 +1,28 @@
+{% extends 'simulator/base.html' %}
+
+{% block title %}{% if form.instance.pk %}Редагувати Турнір{% else %}Створити Турнір{% endif %}{% endblock %}
+
+{% block content %}
+<h2>{% if form.instance.pk %}Редагувати: {{ form.instance.name }}{% else %}Створення нового турніру{% endif %}</h2>
+
+<form method="post">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+
+    {% for field in form %}
+    <div class="form-group">
+        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+        {{ field }} {# Рендеринг поля форми #}
+        {% if field.help_text %}
+        <small style="display: block; color: #666;">{{ field.help_text }}</small>
+        {% endif %}
+        {% for error in field.errors %}
+        <p style="color: red;">{{ error }}</p> {# Помилки конкретного поля #}
+        {% endfor %}
+    </div>
+    {% endfor %}
+
+    <button type="submit" class="btn">{% if form.instance.pk %}Зберегти зміни{% else %}Створити турнір{% endif %}</button>
+    <a href="{% if form.instance.pk %}{% url 'simulator:tournament_detail' form.instance.pk %}{% else %}{% url 'simulator:tournament_list' %}{% endif %}" class="btn" style="background-color: #6c757d;">Скасувати</a>
+</form>
+{% endblock %}

@@ -1,0 +1,33 @@
+{% extends 'simulator/base.html' %}
+
+{% block title %}{{ event.name }}{% endblock %}
+
+{% block content %}
+<h2>{{ event.name }}</h2>
+<p><strong>Місце проведення:</strong> {{ event.location|default:"Не вказано" }}</p>
+<p><strong>Дати:</strong> {{ event.start_date }} - {{ event.end_date }}</p>
+
+<h3>Команди-учасниці</h3>
+{% if event.teams.all %}
+    <ul>
+        {% for team in event.teams.all %}
+        <li><a href="{% url 'simulator:team_detail' team.id %}">{{ team.name }}</a></li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>Команди ще не додані до цієї події.</p>
+{% endif %}
+<h3>Турніри в рамках події</h3>
+{% if event.tournaments.all %}
+    <ul>
+        {% for tournament in event.tournaments.all %}
+        <li><a href="{% url 'simulator:tournament_detail' tournament.id %}">{{ tournament.name }}</a></li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>В рамках цієї події ще немає турнірів.</p>
+{% endif %}
+<br>
+<a href="{% url 'simulator:event_list' %}" class="btn">До списку подій</a>
+<a href="{% url 'simulator:event_update' event.id %}" class="btn">Редагувати подію</a>
+{% endblock %}

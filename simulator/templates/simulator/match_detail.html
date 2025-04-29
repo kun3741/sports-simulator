@@ -1,0 +1,59 @@
+{% extends 'simulator/base.html' %}
+
+{% block title %}Матч: {{ match }}{% endblock %}
+
+{% block content %}
+<h2>Деталі матчу</h2>
+
+<p>
+    <strong>Команди:</strong>
+    <a href="{% url 'simulator:team_detail' match.team1.id %}">{{ match.team1.name }}</a> vs
+    <a href="{% url 'simulator:team_detail' match.team2.id %}">{{ match.team2.name }}</a>
+</p>
+<p><strong>Дата та час:</strong> {{ match.match_datetime }}</p>
+<p><strong>Статус:</strong> {{ match.get_status_display }}</p> {# Використовуємо get_FOO_display для choices #}
+
+{% if match.tournament %}
+<p><strong>Турнір:</strong> <a href="{% url 'simulator:tournament_detail' match.tournament.id %}">{{ match.tournament.name }}</a></p>
+{% endif %}
+
+{% if match.status == match.STATUS_FINISHED %}
+    <p><strong>Результат:</strong> {{ match.score1 }} - {{ match.score2 }}</p>
+{% elif match.status == match.STATUS_SCHEDULED or match.status == match.STATUS_IN_PROGRESS %}
+    <p><strong>Результат:</strong> Ще не визначено</p>
+{% else %}
+     <p><strong>Результат:</strong> N/A (Матч скасовано)</p>
+{% endif %}
+
+<hr>
+
+{% if match.status == match.STATUS_SCHEDULED %}
+    {# Кнопка для ручного введення результату #}
+    <a href="{% url 'simulator:match_record_result' match.id %}" class="btn" style="background-color: #28a745; margin-right: 10px;">Записати результат вручну</a>
+
+    {# --- ДОДАНО ФОРМУ СИМУЛЯЦІЇ --- #}
+    <form method="post" action="{% url 'simulator:match_simulate' match.id %}" style="display: inline;">
+        {% csrf_token %}
+        <button type="submit" class="btn" style="background-color: #ffc107; color: #333;" onclick="return confirm('Ви впевнені, що хочете симулювати результат цього матчу? Поточний результат (якщо є) буде перезаписано.');">
+            Симулювати результат
+        </button>
+    </form>
+    {# --- КІНЕЦЬ ФОРМИ СИМУЛЯЦІЇ --- #}
+
+{% elif match.status == match.STATUS_FINISHED %}
+     <p><i>Матч завершено.</i></p>
+     {# Можна додати посилання для перегляду деталей статистики матчу, якщо вона є #}
+{% else %}
+     <p><i>Дії недоступні для поточного статусу матчу.</i></p>
+{% endif %}
+
+
+<br><br>
+{% if match.tournament %}
+    <a href="{% url 'simulator:tournament_detail' match.tournament.id %}" class="btn" style="background-color: #6c757d;">До турніру</a>
+{% else %}
+    {# Посилання назад, якщо матч не в турнірі (наприклад, на список всіх матчів) #}
+     <a href="#" class="btn" style="background-color: #6c757d;">До списку матчів (TODO)</a>
+{% endif %}
+
+{% endblock %}

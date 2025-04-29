@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Симулятор спортивних змагань{% endblock %}</title>
+    <style>
+        body { font-family: sans-serif; line-height: 1.6; margin: 20px; }
+        nav ul { list-style: none; padding: 0; }
+        nav ul li { display: inline; margin-right: 15px; }
+        nav a { text-decoration: none; color: #007bff; }
+        nav a:hover { text-decoration: underline; }
+        .container { max-width: 960px; margin: auto; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 8px; box-sizing: border-box; }
+        .btn { padding: 10px 15px; background-color: #007bff; color: white; border: none; cursor: pointer; border-radius: 4px; text-decoration: none; display: inline-block; }
+        .btn:hover { background-color: #0056b3; }
+        .alert { padding: 15px; margin-bottom: 20px; border: 1px solid transparent; border-radius: 4px; }
+        .alert-success { color: #155724; background-color: #d4edda; border-color: #c3e6cb; }
+        .alert-error { color: #721c24; background-color: #f8d7da; border-color: #f5c6cb; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Симулятор спортивних змагань</h1>
+            <nav>
+                <ul>
+                    <li><a href="{% url 'simulator:index' %}">Головна</a></li>
+                    <li><a href="{% url 'simulator:event_list' %}">Події</a></li>
+                    <li><a href="{% url 'simulator:tournament_list' %}">Турніри</a></li>
+                    <li><a href="{% url 'simulator:team_list' %}">Команди</a></li>
+                    <li><a href="{% url 'simulator:player_list' %}">Гравці</a></li>
+                    <li><a href="{% url 'simulator:event_create' %}" class="btn">+ Створити подію</a></li>
+                     <li><a href="{% url 'simulator:team_create' %}" class="btn">+ Створити команду</a></li>
+                </ul>
+            </nav>
+            <hr>
+        </header>
+
+        <main>
+            {% if messages %}
+                <div>
+                    {% for message in messages %}
+                    <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            {% block content %}
+            {% endblock %}
+        </main>
+
+    </div>
+</body>
+</html>

@@ -1,0 +1,36 @@
+{% extends 'simulator/base.html' %}
+
+{% block title %}Список Команд{% endblock %}
+
+{% block content %}
+<h2>Команди</h2>
+<a href="{% url 'simulator:team_create' %}" class="btn" style="margin-bottom: 15px;">+ Додати нову команду</a>
+{% if teams %}
+    <table>
+        <thead>
+            <tr>
+                <th>Назва</th>
+                <th>Тренер</th>
+                <th>Кількість гравців</th>
+                <th>Дії</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for team in teams %}
+            <tr>
+                <td><a href="{% url 'simulator:team_detail' team.id %}">{{ team.name }}</a></td>
+                <td>{{ team.coach|default:"N/A" }}</td>
+                <td>{{ team.players.count }}</td> {# Ефективніше передати це з view, якщо гравців багато #}
+                <td>
+                    <a href="{% url 'simulator:team_detail' team.id %}" class="btn">Деталі</a>
+                    <a href="{% url 'simulator:team_update' team.id %}" class="btn">Редагувати</a>
+                     <a href="{% url 'simulator:team_recommendations' team.id %}" class="btn" style="background-color: #17a2b8;">Рекомендації</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <p>Ще немає жодної команди.</p>
+{% endif %}
+{% endblock %}

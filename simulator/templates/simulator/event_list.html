@@ -1,0 +1,37 @@
+{% extends 'simulator/base.html' %}
+
+{% block title %}Список Подій{% endblock %}
+
+{% block content %}
+<h2>Події</h2>
+<a href="{% url 'simulator:event_create' %}" class="btn" style="margin-bottom: 15px;">+ Додати нову подію</a>
+{% if events %}
+    <table>
+        <thead>
+            <tr>
+                <th>Назва</th>
+                <th>Місце</th>
+                <th>Дата початку</th>
+                <th>Дата кінця</th>
+                <th>Дії</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for event in events %}
+            <tr>
+                <td><a href="{% url 'simulator:event_detail' event.id %}">{{ event.name }}</a></td>
+                <td>{{ event.location|default:"N/A" }}</td>
+                <td>{{ event.start_date }}</td>
+                <td>{{ event.end_date }}</td>
+                <td>
+                     <a href="{% url 'simulator:event_detail' event.id %}" class="btn">Деталі</a>
+                     <a href="{% url 'simulator:event_update' event.id %}" class="btn">Редагувати</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <p>Ще немає жодної події.</p>
+{% endif %}
+{% endblock %}

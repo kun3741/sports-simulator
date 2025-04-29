@@ -1,0 +1,28 @@
+{% extends 'simulator/base.html' %} 
+
+{% block title %}Головна - Симулятор спортивних змагань{% endblock %}
+
+{% block content %}
+    <h2>Вітаємо у Симуляторі Спортивних Змагань!</h2>
+    <p>Ця система дозволяє керувати подіями, командами, гравцями та симулювати змагання.</p>
+
+    <h3>Поточна статистика системи:</h3>
+    <ul>
+        <li><strong>Зареєстровано подій:</strong> {{ num_events }}</li>
+        <li><strong>Зареєстровано команд:</strong> {{ num_teams }}</li>
+        <li><strong>Зареєстровано гравців:</strong> {{ num_players }}</li>
+    </ul>
+
+    <h3>Швидкі посилання:</h3>
+    <ul>
+        <li><a href="{% url 'simulator:event_list' %}">Переглянути події</a></li>
+        <li><a href="{% url 'simulator:tournament_list' %}">Переглянути турніри</a></li>
+        <li><a href="{% url 'simulator:team_list' %}">Переглянути команди</a></li>
+        <li><a href="{% url 'simulator:player_list' %}">Переглянути гравців</a></li>
+    </ul>
+
+
+    <h3>Дії:</h3>
+    <a href="{% url 'simulator:event_create' %}" class="btn">Створити нову подію</a>
+
+{% endblock %}

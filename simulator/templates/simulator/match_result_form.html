@@ -1,0 +1,61 @@
+{% extends 'simulator/base.html' %}
+
+{% block title %}Запис результату матчу{% endblock %}
+
+{% block content %}
+<h2>Запис результату: {{ match }}</h2>
+
+<form method="post">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+
+    {# Поля для рахунку #}
+    <div class="form-group">
+        <label for="{{ form.score1.id_for_label }}">{{ match.team1.name }} ({{ form.score1.label }})</label>
+        {{ form.score1 }}
+        {% for error in form.score1.errors %}<p style="color: red;">{{ error }}</p>{% endfor %}
+    </div>
+     <div class="form-group">
+        <label for="{{ form.score2.id_for_label }}">{{ match.team2.name }} ({{ form.score2.label }})</label>
+        {{ form.score2 }}
+        {% for error in form.score2.errors %}<p style="color: red;">{{ error }}</p>{% endfor %}
+    </div>
+
+    <hr>
+    <h4>Статистика гравців (опціонально):</h4>
+    <p><small>Введіть UUID гравців через кому. Це тимчасовий механізм для оновлення статистики.</small></p>
+
+    <div class="form-group">
+        <label for="{{ form.scorers_team1_ids.id_for_label }}">{{ form.scorers_team1_ids.label }} ({{ match.team1.name }})</label>
+        {{ form.scorers_team1_ids }}
+         {% if form.scorers_team1_ids.help_text %}<small style="display: block; color: #666;">{{ form.scorers_team1_ids.help_text }}</small>{% endif %}
+        {% for error in form.scorers_team1_ids.errors %}<p style="color: red;">{{ error }}</p>{% endfor %}
+        {# Список гравців для зручності #}
+        <small>Гравці {{ match.team1.name }}: {% for p in players_team1 %} [{{ p.name }}: {{ p.id }}] {% empty %}Немає гравців{% endfor %}</small>
+    </div>
+    <div class="form-group">
+        <label for="{{ form.assists_team1_ids.id_for_label }}">{{ form.assists_team1_ids.label }} ({{ match.team1.name }})</label>
+        {{ form.assists_team1_ids }}
+         {% if form.assists_team1_ids.help_text %}<small style="display: block; color: #666;">{{ form.assists_team1_ids.help_text }}</small>{% endif %}
+        {% for error in form.assists_team1_ids.errors %}<p style="color: red;">{{ error }}</p>{% endfor %}
+    </div>
+
+    <div class="form-group">
+        <label for="{{ form.scorers_team2_ids.id_for_label }}">{{ form.scorers_team2_ids.label }} ({{ match.team2.name }})</label>
+        {{ form.scorers_team2_ids }}
+         {% if form.scorers_team2_ids.help_text %}<small style="display: block; color: #666;">{{ form.scorers_team2_ids.help_text }}</small>{% endif %}
+        {% for error in form.scorers_team2_ids.errors %}<p style="color: red;">{{ error }}</p>{% endfor %}
+        <small>Гравці {{ match.team2.name }}: {% for p in players_team2 %} [{{ p.name }}: {{ p.id }}] {% empty %}Немає гравців{% endfor %}</small>
+    </div>
+     <div class="form-group">
+        <label for="{{ form.assists_team2_ids.id_for_label }}">{{ form.assists_team2_ids.label }} ({{ match.team2.name }})</label>
+        {{ form.assists_team2_ids }}
+         {% if form.assists_team2_ids.help_text %}<small style="display: block; color: #666;">{{ form.assists_team2_ids.help_text }}</small>{% endif %}
+        {% for error in form.assists_team2_ids.errors %}<p style="color: red;">{{ error }}</p>{% endfor %}
+    </div>
+
+    <button type="submit" class="btn">Зберегти результат</button>
+    <a href="{% url 'simulator:match_detail' match.id %}" class="btn" style="background-color: #6c757d;">Скасувати</a>
+</form>
+
+{% endblock %}
