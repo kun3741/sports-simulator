@@ -3,16 +3,16 @@ from django.core.exceptions import ValidationError
 from django.http import HttpResponse, Http404, HttpResponseForbidden
 from django.urls import reverse, reverse_lazy
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required
 from django.utils import timezone
+from django.db import IntegrityError
 
 from .models import Event, Team, Player, Tournament, Match, PlayerStatistics
-from .forms import EventForm, TeamForm, PlayerForm, MatchResultForm, TournamentForm
+from .forms import EventForm, TeamForm, PlayerForm, MatchResultForm, TournamentForm, MatchForm
 from .services.tournament_manager import TournamentManager
 from .services.report_generator import TournamentResultsReport
-from .services.schedule_generator import ScheduleGenerator, RoundRobinStrategy, KnockoutStrategy
-from .services.player_stats_updater import update_player_stats_from_match_data
-from .services.match_simulator import SimpleMatchSimulator
+from .services.schedule_generator import create_schedule_generator
+from .services.recommendation_system import RecommendationSystem
+from .services.commands import RecordMatchResultCommand, SimulateMatchResultCommand
 
 def index(request):
     num_events = Event.objects.count()
@@ -30,7 +30,7 @@ def event_list(request):
     return render(request, 'simulator/event_list.html', {'events': events})
 
 def team_list(request):
-    teams = Team.objects.order_by('name')
+    teams = Team.objects.order_by('name').prefetch_related('players')
     return render(request, 'simulator/team_list.html', {'teams': teams})
 
 def player_list(request):
@@ -65,7 +65,7 @@ def tournament_update(request, tournament_id):
     return render(request, 'simulator/tournament_form.html', {'form': form})
 
 def tournament_list(request):
-    tournaments = Tournament.objects.select_related('event').order_by('name')
+    tournaments = Tournament.objects.select_related('event').prefetch_related('teams', 'matches').order_by('name')
     return render(request, 'simulator/tournament_list.html', {'tournaments': tournaments})
 
 def event_detail(request, event_id):
@@ -73,10 +73,8 @@ def event_detail(request, event_id):
     return render(request, 'simulator/event_detail.html', {'event': event})
 
 def team_detail(request, team_id):
-    team = get_object_or_404(Team.objects.prefetch_related('players__statistics'), pk=team_id)
-    return render(request, 'simulator/team_detail.html', {
-        'team': team,
-        })
+    team = get_object_or_404(Team.objects.prefetch_related('players__statistics', 'tournaments'), pk=team_id)
+    return render(request, 'simulator/team_detail.html', {'team': team})
 
 def player_detail(request, player_id):
     player = get_object_or_404(Player.objects.select_related('team', 'statistics'), pk=player_id)
@@ -84,16 +82,17 @@ def player_detail(request, player_id):
 
 def tournament_detail(request, tournament_id):
     tournament = get_object_or_404(
-        Tournament.objects.select_related('event').prefetch_related(
+        Tournament.objects.select_related('event', 'winner').prefetch_related(
             'teams', 'matches__team1', 'matches__team2'
         ), pk=tournament_id
     )
-    standings_data = tournament.standings.get('table', [])
-
-    return render(request, 'simulator/tournament_detail.html', {
+    standings_table_list = tournament.final_standings.get('table') or tournament.standings.get('table')
+    context = {
         'tournament': tournament,
-        'standings': standings_data,
-    })
+        'standings_table_list': standings_table_list,
+    }
+    return render(request, 'simulator/tournament_detail.html', context)
+
 
 def match_detail(request, match_id):
     match = get_object_or_404(Match.objects.select_related('team1', 'team2', 'tournament'), pk=match_id)
@@ -109,7 +108,8 @@ def tournament_standings(request, tournament_id):
         raise Http404("Турнір не знайдено.")
     except Exception as e:
         print(f"Помилка при розрахунку таблиці: {e}")
-        return HttpResponse("Помилка при отриманні турнірної таблиці.", status=500)
+        messages.error(request, "Помилка при отриманні турнірної таблиці.")
+        return redirect('simulator:tournament_list')
 
     return render(request, 'simulator/tournament_standings.html', {
         'tournament': tournament,
@@ -150,6 +150,8 @@ def team_create(request):
             team = form.save()
             messages.success(request, f'Команду "{team.name}" успішно створено.')
             return redirect('simulator:team_detail', team_id=team.id)
+        else:
+             messages.error(request, 'Будь ласка, виправте помилки у формі.')
     else:
         form = TeamForm()
     return render(request, 'simulator/team_form.html', {'form': form})
@@ -161,10 +163,11 @@ def player_create(request):
             player = form.save()
             messages.success(request, f'Гравця "{player.name}" успішно створено.')
             return redirect('simulator:player_detail', player_id=player.id)
+        else:
+             messages.error(request, 'Будь ласка, виправте помилки у формі.')
     else:
         form = PlayerForm()
     return render(request, 'simulator/player_form.html', {'form': form})
-
 
 
 def event_update(request, event_id):
@@ -189,6 +192,8 @@ def team_update(request, team_id):
             team = form.save()
             messages.success(request, f'Команду "{team.name}" успішно оновлено.')
             return redirect('simulator:team_detail', team_id=team.id)
+        else:
+            messages.error(request, 'Будь ласка, виправте помилки у формі.')
     else:
         form = TeamForm(instance=team)
     return render(request, 'simulator/team_form.html', {'form': form})
@@ -201,20 +206,28 @@ def player_update(request, player_id):
             player = form.save()
             messages.success(request, f'Гравця "{player.name}" успішно оновлено.')
             return redirect('simulator:player_detail', player_id=player.id)
+        else:
+            messages.error(request, 'Будь ласка, виправте помилки у формі.')
     else:
-        form = PlayerForm(instance=player)
+        initial_data = {}
+        try:
+             stats = player.statistics
+             initial_data = {
+                 'goals': stats.goals,
+                 'assists': stats.assists,
+                 'games_played': stats.games_played,
+             }
+        except PlayerStatistics.DoesNotExist:
+             pass
+        form = PlayerForm(instance=player, initial=initial_data)
     return render(request, 'simulator/player_form.html', {'form': form})
-
 
 
 def match_record_result(request, match_id):
     match = get_object_or_404(Match.objects.select_related('team1', 'team2', 'tournament'), pk=match_id)
 
-    if match.status == Match.STATUS_FINISHED:
-        messages.warning(request, "Результат для цього матчу вже записано.")
-        return redirect('simulator:match_detail', match_id=match.id)
     if match.status == Match.STATUS_CANCELLED:
-        messages.error(request, "Неможливо записати результат для скасованого матчу.")
+        messages.error(request, "Неможливо редагувати результат для скасованого матчу.")
         return redirect('simulator:match_detail', match_id=match.id)
 
     if request.method == 'POST':
@@ -222,21 +235,21 @@ def match_record_result(request, match_id):
         if form.is_valid():
             score1 = form.cleaned_data['score1']
             score2 = form.cleaned_data['score2']
+            scorers1_ids = []
+            assists1_ids = []
+            scorers2_ids = []
+            assists2_ids = []
 
-            scorers1_ids = [pid.strip() for pid in form.cleaned_data.get('scorers_team1_ids', '').split(',') if pid.strip()]
-            assists1_ids = [pid.strip() for pid in form.cleaned_data.get('assists_team1_ids', '').split(',') if pid.strip()]
-            scorers2_ids = [pid.strip() for pid in form.cleaned_data.get('scorers_team2_ids', '').split(',') if pid.strip()]
-            assists2_ids = [pid.strip() for pid in form.cleaned_data.get('assists_team2_ids', '').split(',') if pid.strip()]
+            command = RecordMatchResultCommand(
+                match_id=match.id,
+                score1=score1, score2=score2,
+                scorers1_ids=scorers1_ids, assists1_ids=assists1_ids,
+                scorers2_ids=scorers2_ids, assists2_ids=assists2_ids
+            )
 
             try:
-                match.set_result(score1, score2)
-                messages.success(request, f"Результат матчу {match} успішно записано.")
-
-                update_player_stats_from_match_data(
-                    match=match,
-                    scorers1_ids=scorers1_ids, assists1_ids=assists1_ids,
-                    scorers2_ids=scorers2_ids, assists2_ids=assists2_ids
-                )
+                command.execute()
+                messages.success(request, f"Результат матчу {match} успішно збережено.")
 
                 if match.tournament:
                     return redirect('simulator:tournament_detail', tournament_id=match.tournament.id)
@@ -244,25 +257,23 @@ def match_record_result(request, match_id):
                     return redirect('simulator:match_detail', match_id=match.id)
 
             except (ValidationError, ValueError) as e:
-                messages.error(request, f"Помилка запису результату: {e}")
+                messages.error(request, f"Помилка збереження результату: {e}")
             except Exception as e:
                  messages.error(request, f"Неочікувана помилка: {e}")
-
         else:
              messages.error(request, "Будь ласка, виправте помилки у формі.")
     else:
-        form = MatchResultForm()
-
-    players_team1 = match.team1.players.all().order_by('name')
-    players_team2 = match.team2.players.all().order_by('name')
+        initial_data = {}
+        if match.score1 is not None:
+            initial_data['score1'] = match.score1
+        if match.score2 is not None:
+            initial_data['score2'] = match.score2
+        form = MatchResultForm(initial=initial_data)
 
     return render(request, 'simulator/match_result_form.html', {
         'form': form,
         'match': match,
-        'players_team1': players_team1,
-        'players_team2': players_team2,
-        })
-
+    })
 
 
 def tournament_generate_schedule(request, tournament_id):
@@ -278,34 +289,30 @@ def tournament_generate_schedule(request, tournament_id):
             messages.error(request, "Некоректний формат дати початку.")
             return redirect('simulator:tournament_detail', tournament_id=tournament.id)
 
-        if strategy_type == 'round_robin':
-            strategy = RoundRobinStrategy()
-        elif strategy_type == 'knockout':
-             strategy = KnockoutStrategy()
-        else:
-             messages.error(request, "Невідомий тип стратегії.")
-             return redirect('simulator:tournament_detail', tournament_id=tournament.id)
-
-        generator = ScheduleGenerator(strategy=strategy)
         try:
+            generator = create_schedule_generator(strategy_type)
             created_matches = generator.create_matches_for_tournament(tournament, start_date)
+
             if created_matches:
-                messages.success(request, f"Розклад з {len(created_matches)} матчів успішно згенеровано.")
+                messages.success(request, f"Розклад ({strategy_type}) з {len(created_matches)} матчів успішно згенеровано.")
+                if tournament.status == Tournament.STATUS_PLANNED:
+                    tournament.status = Tournament.STATUS_ONGOING
+                    tournament.save(update_fields=['status'])
             else:
                  messages.warning(request, "Не вдалося створити нові матчі (можливо, розклад вже існує або немає команд).")
+        except ValueError as e:
+             messages.error(request, f"Помилка вибору стратегії: {e}")
         except Exception as e:
             messages.error(request, f"Помилка під час генерації розкладу: {e}")
 
         return redirect('simulator:tournament_detail', tournament_id=tournament.id)
     else:
-        messages.info(request, "Перейдіть на сторінку турніру, щоб згенерувати розклад.")
+        messages.error(request, "Неприпустимий метод запиту для генерації розкладу.")
         return redirect('simulator:tournament_detail', tournament_id=tournament.id)
-
 
 
 def team_recommendations(request, team_id):
     team = get_object_or_404(Team, pk=team_id)
-    from .services.recommendation_system import RecommendationSystem
     recommender = RecommendationSystem(team_id=team.id)
     recommendations_text = recommender.generate_recommendations(save_recommendation=False)
 
@@ -316,23 +323,72 @@ def team_recommendations(request, team_id):
 
 
 def match_simulate(request, match_id):
-    match = get_object_or_404(Match, pk=match_id)
-    if request.method == 'POST':
-        if match.status != Match.STATUS_SCHEDULED:
-             messages.warning(request, "Можна симулювати тільки заплановані матчі.")
+    if request.method != 'POST':
+        messages.error(request, "Неприпустимий метод запиту.")
+        try:
+             match = Match.objects.get(pk=match_id)
              return redirect('simulator:match_detail', match_id=match.id)
+        except Match.DoesNotExist:
+             return redirect('simulator:index')
 
-        simulator = SimpleMatchSimulator(match)
-        success = simulator.simulate_and_set_result()
+    command = SimulateMatchResultCommand(match_id=match_id)
+    match = None
+    try:
+        success = command.execute()
+        match = command._get_match(match_id)
 
         if success:
              messages.success(request, f"Матч {match} успішно симульовано та результат записано.")
         else:
              messages.error(request, f"Не вдалося симулювати або записати результат для матчу {match}.")
 
-        if match.tournament:
-            return redirect('simulator:tournament_detail', tournament_id=match.tournament.id)
-        else:
-            return redirect('simulator:match_detail', match_id=match.id)
-    else:
+    except (ValidationError, ValueError) as e:
+        messages.error(request, f"Помилка симуляції: {e}")
+        try:
+            match = command._get_match(match_id)
+        except ValueError:
+            match = None
+    except Exception as e:
+         messages.error(request, f"Неочікувана помилка симуляції: {e}")
+         try:
+            match = Match.objects.get(pk=match_id)
+         except Match.DoesNotExist:
+             match = None
+
+    if match and match.tournament:
+        return redirect('simulator:tournament_detail', tournament_id=match.tournament.id)
+    elif match:
         return redirect('simulator:match_detail', match_id=match.id)
+    else:
+        return redirect('simulator:index')
+
+def match_create(request, tournament_id):
+    tournament = get_object_or_404(Tournament, pk=tournament_id)
+    tournament_teams = tournament.teams.all()
+    if not tournament_teams or tournament_teams.count() < 2:
+         messages.error(request, "У турнірі недостатньо команд для створення матчу.")
+         return redirect('simulator:tournament_detail', tournament_id=tournament.id)
+
+    if request.method == 'POST':
+        form = MatchForm(request.POST, tournament_teams=tournament_teams)
+        if form.is_valid():
+            match = form.save(commit=False)
+            match.tournament = tournament
+            match.status = Match.STATUS_SCHEDULED
+            try:
+                match.save()
+                messages.success(request, f'Матч між {match.team1.name} та {match.team2.name} успішно додано до турніру "{tournament.name}".')
+                if tournament.status == Tournament.STATUS_PLANNED:
+                    tournament.status = Tournament.STATUS_ONGOING
+                    tournament.save(update_fields=['status'])
+                return redirect('simulator:tournament_detail', tournament_id=tournament.id)
+            except IntegrityError:
+                 messages.error(request, "Такий матч вже існує в цьому турнірі.")
+            except Exception as e:
+                 messages.error(request, f"Виникла помилка при збереженні матчу: {e}")
+        else:
+            messages.error(request, 'Будь ласка, виправте помилки у формі.')
+    else:
+        form = MatchForm(tournament_teams=tournament_teams)
+
+    return render(request, 'simulator/match_form.html', {'form': form, 'tournament': tournament})

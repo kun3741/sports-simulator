@@ -1,52 +1,41 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="uk">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Симулятор спортивних змагань{% endblock %}</title>
-    <style>
-        body { font-family: sans-serif; line-height: 1.6; margin: 20px; }
-        nav ul { list-style: none; padding: 0; }
-        nav ul li { display: inline; margin-right: 15px; }
-        nav a { text-decoration: none; color: #007bff; }
-        nav a:hover { text-decoration: underline; }
-        .container { max-width: 960px; margin: auto; }
-        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
-        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-        th { background-color: #f2f2f2; }
-        .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; margin-bottom: 5px; }
-        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 8px; box-sizing: border-box; }
-        .btn { padding: 10px 15px; background-color: #007bff; color: white; border: none; cursor: pointer; border-radius: 4px; text-decoration: none; display: inline-block; }
-        .btn:hover { background-color: #0056b3; }
-        .alert { padding: 15px; margin-bottom: 20px; border: 1px solid transparent; border-radius: 4px; }
-        .alert-success { color: #155724; background-color: #d4edda; border-color: #c3e6cb; }
-        .alert-error { color: #721c24; background-color: #f8d7da; border-color: #f5c6cb; }
-    </style>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" type="text/css" href="{% static 'simulator/css/style.css' %}">
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>Симулятор спортивних змагань</h1>
+            <h1><i class="fas fa-futbol"></i> Симулятор спортивних змагань</h1>
             <nav>
                 <ul>
-                    <li><a href="{% url 'simulator:index' %}">Головна</a></li>
-                    <li><a href="{% url 'simulator:event_list' %}">Події</a></li>
-                    <li><a href="{% url 'simulator:tournament_list' %}">Турніри</a></li>
-                    <li><a href="{% url 'simulator:team_list' %}">Команди</a></li>
-                    <li><a href="{% url 'simulator:player_list' %}">Гравці</a></li>
-                    <li><a href="{% url 'simulator:event_create' %}" class="btn">+ Створити подію</a></li>
-                     <li><a href="{% url 'simulator:team_create' %}" class="btn">+ Створити команду</a></li>
+                    <li><a href="{% url 'simulator:index' %}"><i class="fas fa-home"></i> Головна</a></li>
+                    <li><a href="{% url 'simulator:event_list' %}"><i class="fas fa-calendar-alt"></i> Події</a></li>
+                    <li><a href="{% url 'simulator:tournament_list' %}"><i class="fas fa-trophy"></i> Турніри</a></li>
+                    <li><a href="{% url 'simulator:team_list' %}"><i class="fas fa-users"></i> Команди</a></li>
+                    <li><a href="{% url 'simulator:player_list' %}"><i class="fas fa-user"></i> Гравці</a></li>
+                    <li><a href="{% url 'simulator:event_create' %}" class="btn btn-small btn-success"><i class="fas fa-plus"></i> Подію</a></li>
+                    <li><a href="{% url 'simulator:team_create' %}" class="btn btn-small btn-success"><i class="fas fa-plus"></i> Команду</a></li>
+                    <li><a href="{% url 'simulator:tournament_create' %}" class="btn btn-small btn-success"><i class="fas fa-plus"></i> Турнір</a></li>
+                     <li><a href="{% url 'simulator:player_create' %}" class="btn btn-small btn-success"><i class="fas fa-plus"></i> Гравця</a></li>
                 </ul>
             </nav>
-            <hr>
         </header>
 
         <main>
             {% if messages %}
                 <div>
                     {% for message in messages %}
-                    <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">{{ message }}</div>
+                    {# ВИПРАВЛЕНО: Забрано неіснуючий фільтр 'replace' #}
+                    <div class="alert {% if message.tags %}alert-{{ message.tags }}{% else %}alert-info{% endif %}">{{ message }}</div>
                     {% endfor %}
                 </div>
             {% endif %}
@@ -54,6 +43,10 @@
             {% block content %}
             {% endblock %}
         </main>
+
+        <footer style="text-align: center; margin-top: 30px; padding-top: 15px; border-top: 1px solid #eee; font-size: 0.9em; color: #6c757d;">
+            <p>&copy; {% now "Y" %} Sports Simulator Project</p>
+        </footer>
 
     </div>
 </body>

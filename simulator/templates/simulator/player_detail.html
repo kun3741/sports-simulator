@@ -3,27 +3,26 @@
 {% block title %}Гравець: {{ player.name }}{% endblock %}
 
 {% block content %}
-<h2>{{ player.name }}</h2>
+<h2><i class="fas fa-user-circle"></i> {{ player.name }}</h2>
 <p><strong>Вік:</strong> {{ player.age }}</p>
 <p><strong>Позиція:</strong> {{ player.position|default:"Не вказано" }}</p>
-<p><strong>Команда:</strong> {% if player.team %}<a href="{% url 'simulator:team_detail' player.team.id %}">{{ player.team.name }}</a>{% else %}Вільний агент{% endif %}</p>
+<p><strong>Команда:</strong> {% if player.team %}<a href="{% url 'simulator:team_detail' player.team.id %}"><i class="fas fa-users"></i> {{ player.team.name }}</a>{% else %}Вільний агент{% endif %}</p>
 
-<h3>Статистика</h3>
-{% with stats=player.statistics %} {# Використовуємо with для зручності #}
+<h3><i class="fas fa-chart-line"></i> Статистика</h3>
+{% with stats=player.statistics %}
     {% if stats %}
-        <p><strong>Зіграно матчів:</strong> {{ stats.games_played|default:0 }}</p>
-        <p><strong>Голи:</strong> {{ stats.goals|default:0 }}</p>
-        <p><strong>Асисти:</strong> {{ stats.assists|default:0 }}</p>
-        {# Додати іншу статистику, якщо є #}
+        <p><strong><i class="fas fa-running"></i> Зіграно матчів:</strong> {{ stats.games_played|default:0 }}</p>
+        <p><strong><i class="fas fa-futbol"></i> Голи:</strong> {{ stats.goals|default:0 }}</p>
+        <p><strong><i class="fas fa-hands-helping"></i> Асисти:</strong> {{ stats.assists|default:0 }}</p>
     {% else %}
         <p>Статистика для цього гравця ще не створена.</p>
     {% endif %}
 {% endwith %}
 
 <br>
-<a href="{% url 'simulator:player_list' %}" class="btn">До списку гравців</a>
+<a href="{% url 'simulator:player_list' %}" class="btn btn-secondary"><i class="fas fa-list"></i> До списку гравців</a>
 {% if player.team %}
-    <a href="{% url 'simulator:team_detail' player.team.id %}" class="btn" style="background-color: #6c757d;">До команди</a>
+    <a href="{% url 'simulator:team_detail' player.team.id %}" class="btn btn-secondary ml-2"><i class="fas fa-arrow-left"></i> До команди</a>
 {% endif %}
-<a href="{% url 'simulator:player_update' player.id %}" class="btn">Редагувати гравця</a>
+<a href="{% url 'simulator:player_update' player.id %}" class="btn btn-warning ml-2"><i class="fas fa-edit"></i> Редагувати гравця</a>
 {% endblock %}

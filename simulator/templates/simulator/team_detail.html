@@ -3,11 +3,11 @@
 {% block title %}{{ team.name }}{% endblock %}
 
 {% block content %}
-<h2>{{ team.name }}</h2>
+<h2><i class="fas fa-shield-alt"></i> {{ team.name }}</h2>
 <p><strong>Тренер:</strong> {{ team.coach|default:"Не вказано" }}</p>
 
-<h3>Склад команди</h3>
-{% with players=team.players.all %} {# Отримуємо гравців один раз #}
+<h3><i class="fas fa-users"></i> Склад команди</h3>
+{% with players=team.players.all %}
     {% if players %}
         <table>
              <thead>
@@ -26,10 +26,9 @@
                     <td><a href="{% url 'simulator:player_detail' player.id %}">{{ player.name }}</a></td>
                     <td>{{ player.age }}</td>
                     <td>{{ player.position|default:"N/A" }}</td>
-                    {# Доступ до статистики через related_name #}
                     <td>{{ player.statistics.goals|default:0 }}</td>
                     <td>{{ player.statistics.assists|default:0 }}</td>
-                    <td><a href="{% url 'simulator:player_detail' player.id %}" class="btn">Деталі гравця</a></td>
+                    <td><a href="{% url 'simulator:player_detail' player.id %}" class="btn btn-small btn-info"><i class="fas fa-search"></i> Деталі гравця</a></td>
                 </tr>
                 {% endfor %}
              </tbody>
@@ -38,11 +37,8 @@
         <p>У команді ще немає гравців.</p>
     {% endif %}
 {% endwith %}
-{# Посилання на додавання гравця до команди (якщо не через адмінку) #}
-{# <a href="{% url 'simulator:player_create' %}?team_id={{ team.id }}" class="btn">+ Додати гравця</a> #}
 
-
-<h3>Турніри, в яких бере участь</h3>
+<h3><i class="fas fa-trophy"></i> Турніри, в яких бере участь</h3>
 {% if team.tournaments.all %}
     <ul>
         {% for tournament in team.tournaments.all %}
@@ -54,7 +50,7 @@
 {% endif %}
 
 <br>
-<a href="{% url 'simulator:team_list' %}" class="btn">До списку команд</a>
-<a href="{% url 'simulator:team_update' team.id %}" class="btn">Редагувати команду</a>
-<a href="{% url 'simulator:team_recommendations' team.id %}" class="btn" style="background-color: #17a2b8;">Отримати Рекомендації</a>
+<a href="{% url 'simulator:team_list' %}" class="btn btn-secondary"><i class="fas fa-list"></i> До списку команд</a>
+<a href="{% url 'simulator:team_update' team.id %}" class="btn btn-warning ml-2"><i class="fas fa-edit"></i> Редагувати команду</a>
+<a href="{% url 'simulator:team_recommendations' team.id %}" class="btn btn-info ml-2"><i class="fas fa-lightbulb"></i> Отримати Рекомендації</a>
 {% endblock %}

@@ -3,7 +3,7 @@
 {% block title %}Турнірна таблиця - {{ tournament.name }}{% endblock %}
 
 {% block content %}
-<h2>Турнірна таблиця: {{ tournament.name }}</h2>
+<h2><i class="fas fa-table"></i> Турнірна таблиця: {{ tournament.name }}</h2>
 
 {% if standings %}
 <table class="standings-table">
@@ -11,14 +11,14 @@
         <tr>
             <th>#</th>
             <th>Команда</th>
-            <th>І</th> {# Зіграно ігор #}
-            <th>В</th> {# Виграші #}
-            <th>Н</th> {# Нічиї #}
-            <th>П</th> {# Поразки #}
-            <th>ЗМ</th> {# Забиті м'ячі #}
-            <th>ПМ</th> {# Пропущені м'ячі #}
-            <th>РМ</th> {# Різниця м'ячів #}
-            <th>О</th> {# Очки #}
+            <th>І</th> 
+            <th>В</th> 
+            <th>Н</th> 
+            <th>П</th> 
+            <th>ЗМ</th> 
+            <th>ПМ</th> 
+            <th>РМ</th> 
+            <th>О</th> 
         </tr>
     </thead>
     <tbody>
@@ -42,5 +42,5 @@
 <p>Турнірна таблиця ще не сформована або немає даних.</p>
 {% endif %}
 <br>
-<p><a href="{% url 'simulator:tournament_detail' tournament.id %}" class="btn">Назад до турніру</a></p>
+<p><a href="{% url 'simulator:tournament_detail' tournament.id %}" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Назад до турніру</a></p>
 {% endblock %}

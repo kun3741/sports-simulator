@@ -3,18 +3,24 @@
 {% block title %}{% if form.instance.pk %}Редагувати Команду{% else %}Створити Команду{% endif %}{% endblock %}
 
 {% block content %}
-<h2>{% if form.instance.pk %}Редагувати: {{ form.instance.name }}{% else %}Створення нової команди{% endif %}</h2>
+<h2>{% if form.instance.pk %}<i class="fas fa-edit"></i> Редагувати: {{ form.instance.name }}{% else %}<i class="fas fa-plus-circle"></i> Створення нової команди{% endif %}</h2>
 
 <form method="post">
     {% csrf_token %}
-    {{ form.non_field_errors }}
+    {% if form.non_field_errors %}
+        <div class="alert alert-danger">
+            {% for error in form.non_field_errors %}
+                <p>{{ error }}</p>
+            {% endfor %}
+        </div>
+    {% endif %}
 
     {% for field in form %}
     <div class="form-group">
         <label for="{{ field.id_for_label }}">{{ field.label }}</label>
         {{ field }}
         {% if field.help_text %}
-        <small style="display: block; color: #666;">{{ field.help_text }}</small>
+        <small>{{ field.help_text }}</small>
         {% endif %}
         {% for error in field.errors %}
         <p style="color: red;">{{ error }}</p>
@@ -22,7 +28,7 @@
     </div>
     {% endfor %}
 
-    <button type="submit" class="btn">{% if form.instance.pk %}Зберегти зміни{% else %}Створити команду{% endif %}</button>
-    <a href="{% if form.instance.pk %}{% url 'simulator:team_detail' form.instance.pk %}{% else %}{% url 'simulator:team_list' %}{% endif %}" class="btn" style="background-color: #6c757d;">Скасувати</a>
+    <button type="submit" class="btn btn-primary">{% if form.instance.pk %}<i class="fas fa-save"></i> Зберегти зміни{% else %}<i class="fas fa-plus"></i> Створити команду{% endif %}</button>
+    <a href="{% if form.instance.pk %}{% url 'simulator:team_detail' form.instance.pk %}{% else %}{% url 'simulator:team_list' %}{% endif %}" class="btn btn-secondary ml-2"><i class="fas fa-times"></i> Скасувати</a>
 </form>
 {% endblock %}

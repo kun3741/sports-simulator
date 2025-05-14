@@ -9,7 +9,6 @@ from ..models import Team, Match, Tournament
 class ScheduleStrategy(abc.ABC):
     @abc.abstractmethod
     def generate(self, teams, start_date, **kwargs):
-        """Генерує список потенційних матчів."""
         pass
 
 class RoundRobinStrategy(ScheduleStrategy):
@@ -57,7 +56,6 @@ class KnockoutStrategy(ScheduleStrategy):
         return schedule
 
 class ScheduleGenerator:
-
     def __init__(self, strategy: ScheduleStrategy):
         if not isinstance(strategy, ScheduleStrategy):
              raise TypeError("Стратегія має бути екземпляром ScheduleStrategy")
@@ -99,3 +97,15 @@ class ScheduleGenerator:
             except Exception as e:
                  print(f"Помилка створення матчу для {match_data}: {e}")
         return created_matches
+
+
+def create_schedule_generator(strategy_name: str) -> ScheduleGenerator:
+    if strategy_name == 'round_robin':
+        strategy_instance = RoundRobinStrategy()
+    elif strategy_name == 'knockout':
+        strategy_instance = KnockoutStrategy()
+    else:
+        print(f"Попередження: Невідома стратегія '{strategy_name}'. Використовується RoundRobin.")
+        strategy_instance = RoundRobinStrategy()
+
+    return ScheduleGenerator(strategy=strategy_instance)

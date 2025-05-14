@@ -3,13 +3,13 @@
 {% block title %}Рекомендації для {{ team.name }}{% endblock %}
 
 {% block content %}
-<h2>Рекомендації для команди: {{ team.name }}</h2>
+<h2><i class="fas fa-lightbulb"></i> Рекомендації для команди: {{ team.name }}</h2>
 
 {% if recommendations %}
     <ul>
         {% for rec in recommendations %}
-            {% if rec %} {# Показуємо тільки не порожні рядки #}
-                <li>{{ rec|slice:"2:" }}</li> {# Видаляємо початковий "- " #}
+            {% if rec %}
+                <li>{{ rec|slice:"2:" }}</li> 
             {% endif %}
         {% endfor %}
     </ul>
@@ -17,7 +17,7 @@
     <p>Не вдалося згенерувати рекомендації або їх немає.</p>
 {% endif %}
 <br>
-<a href="{% url 'simulator:team_detail' team.id %}" class="btn">Назад до команди</a>
-<a href="{% url 'simulator:team_list' %}" class="btn" style="background-color: #6c757d;">До списку команд</a>
+<a href="{% url 'simulator:team_detail' team.id %}" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Назад до команди</a>
+<a href="{% url 'simulator:team_list' %}" class="btn btn-secondary ml-2"><i class="fas fa-list"></i> До списку команд</a>
 
 {% endblock %}

@@ -3,14 +3,25 @@
 {% block title %}Турнір: {{ tournament.name }}{% endblock %}
 
 {% block content %}
-<h2>{{ tournament.name }}</h2>
+<h2><i class="fas fa-trophy"></i> {{ tournament.name }}</h2>
 {% if tournament.event %}
-<p><strong>Частина події:</strong> <a href="{% url 'simulator:event_detail' tournament.event.id %}">{{ tournament.event.name }}</a></p>
+<p><strong>Частина події:</strong> <a href="{% url 'simulator:event_detail' tournament.event.id %}"><i class="fas fa-calendar-alt"></i> {{ tournament.event.name }}</a></p>
 {% endif %}
 
-{# Форма для генерації розкладу #}
-<div style="border: 1px solid #ccc; padding: 15px; margin-bottom: 20px; background-color: #f9f9f9;">
-    <h4>Генерація розкладу</h4>
+<p><strong><i class="fas fa-info-circle"></i> Статус:</strong> {{ tournament.get_status_display }}</p>
+
+{% if tournament.status == tournament.STATUS_FINISHED %}
+    {% if tournament.winner %}
+        <p><strong><i class="fas fa-crown"></i> Переможець:</strong> <a href="{% url 'simulator:team_detail' tournament.winner.id %}">{{ tournament.winner.name }}</a></p>
+    {% else %}
+        <p><strong><i class="fas fa-crown"></i> Переможець:</strong> Не визначено</p>
+    {% endif %}
+{% endif %}
+
+
+{% if tournament.status == tournament.STATUS_PLANNED or tournament.status == tournament.STATUS_ONGOING %}
+<div class="action-block">
+    <h4><i class="fas fa-calendar-plus"></i> Генерація розкладу</h4>
     <form action="{% url 'simulator:tournament_generate_schedule' tournament.id %}" method="post">
         {% csrf_token %}
         <div class="form-group">
@@ -24,12 +35,13 @@
                 <option value="knockout">Олімпійська система (Knockout - 1 раунд)</option>
             </select>
         </div>
-        <button type="submit" class="btn">Згенерувати розклад</button>
+        <button type="submit" class="btn btn-primary"><i class="fas fa-cogs"></i> Згенерувати розклад</button>
     </form>
 </div>
+{% endif %}
 
 
-<h3>Команди-учасниці</h3>
+<h3><i class="fas fa-users"></i> Команди-учасниці</h3>
 {% if tournament.teams.all %}
     <ul>
         {% for team in tournament.teams.all %}
@@ -40,8 +52,9 @@
     <p>Команди ще не додані до цього турніру.</p>
 {% endif %}
 
-<h3>Матчі турніру</h3>
-{% with matches=tournament.matches.all %} {# Отримуємо матчі один раз #}
+<a href="{% url 'simulator:match_create' tournament.id %}" class="btn btn-success mb-3"><i class="fas fa-plus"></i> Додати Матч</a>
+<h3><i class="fas fa-futbol"></i> Матчі турніру</h3>
+{% with matches=tournament.matches.all %}
     {% if matches %}
         <table>
              <thead>
@@ -69,15 +82,17 @@
                     <td><a href="{% url 'simulator:team_detail' match.team2.id %}">{{ match.team2.name }}</a></td>
                     <td>{{ match.get_status_display }}</td>
                     <td>
-                        <a href="{% url 'simulator:match_detail' match.id %}" class="btn">Деталі матчу</a>
+                        <a href="{% url 'simulator:match_detail' match.id %}" class="btn btn-small btn-info"><i class="fas fa-search"></i> Деталі</a>
                         {% if match.status == match.STATUS_SCHEDULED %}
-                            <a href="{% url 'simulator:match_record_result' match.id %}" class="btn" style="background-color: #28a745; font-size: 0.8em; padding: 5px 8px;">Записати рез.</a>
-                            <form method="post" action="{% url 'simulator:match_simulate' match.id %}" style="display: inline;">
+                            <a href="{% url 'simulator:match_record_result' match.id %}" class="btn btn-small btn-success"><i class="fas fa-check"></i> Записати рез.</a>
+                            <form method="post" action="{% url 'simulator:match_simulate' match.id %}" style="display: inline;" class="ml-1">
                                 {% csrf_token %}
-                                <button type="submit" class="btn" style="background-color: #ffc107; color: #333; font-size: 0.8em; padding: 5px 8px;" onclick="return confirm('Симулювати результат?');">
-                                    Симулювати
+                                <button type="submit" class="btn btn-small btn-warning" onclick="return confirm('Симулювати результат?');">
+                                    <i class="fas fa-play"></i> Симулювати
                                 </button>
                             </form>
+                        {% elif match.status == match.STATUS_FINISHED %}
+                             <a href="{% url 'simulator:match_record_result' match.id %}" class="btn btn-small btn-warning"><i class="fas fa-edit"></i> Ред. рез.</a>
                         {% endif %}
                     </td>
                 </tr>
@@ -89,13 +104,13 @@
     {% endif %}
 {% endwith %}
 
-<h3>Турнірна таблиця</h3>
-<p><a href="{% url 'simulator:tournament_standings' tournament.id %}" class="btn" style="background-color: #ffc107; color: #333;">Переглянути повну таблицю</a></p>
-{# Можна вивести скорочену таблицю прямо тут, використовуючи дані з tournament.standings #}
-{% if tournament.standings.table %}
-    <h4>Топ-3 команд:</h4>
+<h3><i class="fas fa-table"></i> Турнірна таблиця</h3>
+<p><a href="{% url 'simulator:tournament_standings' tournament.id %}" class="btn btn-info"><i class="fas fa-table"></i> Переглянути повну таблицю</a></p>
+
+{% if standings_table_list %}
+    <h4>Поточне/Фінальне положення (Топ-5):</h4>
     <ol>
-    {% for entry in tournament.standings.table|slice:":3" %}
+    {% for entry in standings_table_list|slice:":5" %}
         <li>{{ entry.team_name }} ({{ entry.points }} очок)</li>
     {% endfor %}
     </ol>
@@ -105,10 +120,10 @@
 
 
 <br><br>
-<a href="{% url 'simulator:tournament_list' %}" class="btn">До списку турнірів</a>
+<a href="{% url 'simulator:tournament_list' %}" class="btn btn-secondary"><i class="fas fa-list"></i> До списку турнірів</a>
 {% if tournament.event %}
-    <a href="{% url 'simulator:event_detail' tournament.event.id %}" class="btn" style="background-color: #6c757d;">До події</a>
+    <a href="{% url 'simulator:event_detail' tournament.event.id %}" class="btn btn-secondary ml-2"><i class="fas fa-calendar-check"></i> До події</a>
 {% endif %}
-<a href="{% url 'simulator:tournament_update' tournament.id %}" class="btn">Редагувати турнір</a>
+<a href="{% url 'simulator:tournament_update' tournament.id %}" class="btn btn-warning ml-2"><i class="fas fa-edit"></i> Редагувати турнір</a>
 
 {% endblock %}

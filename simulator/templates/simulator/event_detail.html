@@ -3,11 +3,20 @@
 {% block title %}{{ event.name }}{% endblock %}
 
 {% block content %}
-<h2>{{ event.name }}</h2>
-<p><strong>Місце проведення:</strong> {{ event.location|default:"Не вказано" }}</p>
-<p><strong>Дати:</strong> {{ event.start_date }} - {{ event.end_date }}</p>
+<h2><i class="fas fa-calendar-check"></i> {{ event.name }}</h2>
+<p><strong><i class="fas fa-map-marker-alt"></i> Місце проведення:</strong> {{ event.location|default:"Не вказано" }}</p>
+<p><strong><i class="fas fa-clock"></i> Дати:</strong> {{ event.start_date }} - {{ event.end_date }}</p>
+<p><strong><i class="fas fa-info-circle"></i> Статус:</strong> {{ event.get_status_display }}</p>
 
-<h3>Команди-учасниці</h3>
+{% if event.status == event.STATUS_FINISHED and event.results_summary %}
+    <h4><i class="fas fa-poll"></i> Результати події:</h4>
+    <div style="background-color: #f8f9fa; border: 1px solid #e9ecef; padding: 15px; border-radius: 5px;">
+        {{ event.results_summary|linebreaksbr }}
+    </div>
+{% endif %}
+
+
+<h3><i class="fas fa-users"></i> Команди-учасниці</h3>
 {% if event.teams.all %}
     <ul>
         {% for team in event.teams.all %}
@@ -17,17 +26,17 @@
 {% else %}
     <p>Команди ще не додані до цієї події.</p>
 {% endif %}
-<h3>Турніри в рамках події</h3>
+<h3><i class="fas fa-trophy"></i> Турніри в рамках події</h3>
 {% if event.tournaments.all %}
     <ul>
         {% for tournament in event.tournaments.all %}
-        <li><a href="{% url 'simulator:tournament_detail' tournament.id %}">{{ tournament.name }}</a></li>
+        <li><a href="{% url 'simulator:tournament_detail' tournament.id %}">{{ tournament.name }}</a> ({{tournament.get_status_display}})</li>
         {% endfor %}
     </ul>
 {% else %}
     <p>В рамках цієї події ще немає турнірів.</p>
 {% endif %}
 <br>
-<a href="{% url 'simulator:event_list' %}" class="btn">До списку подій</a>
-<a href="{% url 'simulator:event_update' event.id %}" class="btn">Редагувати подію</a>
+<a href="{% url 'simulator:event_list' %}" class="btn btn-secondary"><i class="fas fa-list"></i> До списку подій</a>
+<a href="{% url 'simulator:event_update' event.id %}" class="btn btn-warning ml-2"><i class="fas fa-edit"></i> Редагувати подію</a>
 {% endblock %}

@@ -3,8 +3,8 @@
 {% block title %}Список Гравців{% endblock %}
 
 {% block content %}
-<h2>Гравці</h2>
-<a href="{% url 'simulator:player_create' %}" class="btn" style="margin-bottom: 15px;">+ Додати нового гравця</a>
+<h2><i class="fas fa-user"></i> Гравці</h2>
+<a href="{% url 'simulator:player_create' %}" class="btn btn-success mb-3"><i class="fas fa-plus"></i> Додати нового гравця</a>
 {% if players %}
     <table>
         <thead>
@@ -13,8 +13,8 @@
                 <th>Вік</th>
                 <th>Позиція</th>
                 <th>Команда</th>
-                <th>Голи</th>
-                <th>Асисти</th>
+                <th><i class="fas fa-futbol"></i> Голи</th>
+                <th><i class="fas fa-hands-helping"></i> Асисти</th>
                 <th>Дії</th>
             </tr>
         </thead>
@@ -28,8 +28,8 @@
                 <td>{{ player.statistics.goals|default:0 }}</td>
                 <td>{{ player.statistics.assists|default:0 }}</td>
                 <td>
-                    <a href="{% url 'simulator:player_detail' player.id %}" class="btn">Деталі</a>
-                    <a href="{% url 'simulator:player_update' player.id %}" class="btn">Редагувати</a>
+                    <a href="{% url 'simulator:player_detail' player.id %}" class="btn btn-small btn-info"><i class="fas fa-info-circle"></i> Деталі</a>
+                    <a href="{% url 'simulator:player_update' player.id %}" class="btn btn-small btn-warning"><i class="fas fa-edit"></i> Редагувати</a>
                 </td>
             </tr>
             {% endfor %}

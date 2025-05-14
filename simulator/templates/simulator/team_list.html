@@ -3,8 +3,8 @@
 {% block title %}Список Команд{% endblock %}
 
 {% block content %}
-<h2>Команди</h2>
-<a href="{% url 'simulator:team_create' %}" class="btn" style="margin-bottom: 15px;">+ Додати нову команду</a>
+<h2><i class="fas fa-users"></i> Команди</h2>
+<a href="{% url 'simulator:team_create' %}" class="btn btn-success mb-3"><i class="fas fa-plus"></i> Додати нову команду</a>
 {% if teams %}
     <table>
         <thead>
@@ -20,11 +20,11 @@
             <tr>
                 <td><a href="{% url 'simulator:team_detail' team.id %}">{{ team.name }}</a></td>
                 <td>{{ team.coach|default:"N/A" }}</td>
-                <td>{{ team.players.count }}</td> {# Ефективніше передати це з view, якщо гравців багато #}
+                <td>{{ team.players.count }}</td>
                 <td>
-                    <a href="{% url 'simulator:team_detail' team.id %}" class="btn">Деталі</a>
-                    <a href="{% url 'simulator:team_update' team.id %}" class="btn">Редагувати</a>
-                     <a href="{% url 'simulator:team_recommendations' team.id %}" class="btn" style="background-color: #17a2b8;">Рекомендації</a>
+                    <a href="{% url 'simulator:team_detail' team.id %}" class="btn btn-small btn-info"><i class="fas fa-info-circle"></i> Деталі</a>
+                    <a href="{% url 'simulator:team_update' team.id %}" class="btn btn-small btn-warning"><i class="fas fa-edit"></i> Редагувати</a>
+                    <a href="{% url 'simulator:team_recommendations' team.id %}" class="btn btn-small btn-info"><i class="fas fa-lightbulb"></i> Рекомендації</a>
                 </td>
             </tr>
             {% endfor %}

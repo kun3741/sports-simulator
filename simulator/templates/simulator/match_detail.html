@@ -3,57 +3,50 @@
 {% block title %}Матч: {{ match }}{% endblock %}
 
 {% block content %}
-<h2>Деталі матчу</h2>
+<h2><i class="fas fa-futbol"></i> Деталі матчу</h2>
 
 <p>
-    <strong>Команди:</strong>
+    <strong><i class="fas fa-users"></i> Команди:</strong>
     <a href="{% url 'simulator:team_detail' match.team1.id %}">{{ match.team1.name }}</a> vs
     <a href="{% url 'simulator:team_detail' match.team2.id %}">{{ match.team2.name }}</a>
 </p>
-<p><strong>Дата та час:</strong> {{ match.match_datetime }}</p>
-<p><strong>Статус:</strong> {{ match.get_status_display }}</p> {# Використовуємо get_FOO_display для choices #}
+<p><strong><i class="fas fa-clock"></i> Дата та час:</strong> {{ match.match_datetime }}</p>
+<p><strong><i class="fas fa-info-circle"></i> Статус:</strong> {{ match.get_status_display }}</p> 
 
 {% if match.tournament %}
-<p><strong>Турнір:</strong> <a href="{% url 'simulator:tournament_detail' match.tournament.id %}">{{ match.tournament.name }}</a></p>
+<p><strong><i class="fas fa-trophy"></i> Турнір:</strong> <a href="{% url 'simulator:tournament_detail' match.tournament.id %}">{{ match.tournament.name }}</a></p>
 {% endif %}
 
 {% if match.status == match.STATUS_FINISHED %}
-    <p><strong>Результат:</strong> {{ match.score1 }} - {{ match.score2 }}</p>
+    <p><strong><i class="fas fa-flag-checkered"></i> Результат:</strong> {{ match.score1 }} - {{ match.score2 }}</p>
 {% elif match.status == match.STATUS_SCHEDULED or match.status == match.STATUS_IN_PROGRESS %}
-    <p><strong>Результат:</strong> Ще не визначено</p>
+    <p><strong><i class="fas fa-hourglass-half"></i> Результат:</strong> Ще не визначено</p>
 {% else %}
-     <p><strong>Результат:</strong> N/A (Матч скасовано)</p>
+     <p><strong><i class="fas fa-times-circle"></i> Результат:</strong> N/A (Матч скасовано)</p>
 {% endif %}
 
 <hr>
 
 {% if match.status == match.STATUS_SCHEDULED %}
-    {# Кнопка для ручного введення результату #}
-    <a href="{% url 'simulator:match_record_result' match.id %}" class="btn" style="background-color: #28a745; margin-right: 10px;">Записати результат вручну</a>
-
-    {# --- ДОДАНО ФОРМУ СИМУЛЯЦІЇ --- #}
-    <form method="post" action="{% url 'simulator:match_simulate' match.id %}" style="display: inline;">
+    <a href="{% url 'simulator:match_record_result' match.id %}" class="btn btn-success"><i class="fas fa-check"></i> Записати результат вручну</a>
+    <form method="post" action="{% url 'simulator:match_simulate' match.id %}" class="d-inline-block ml-2">
         {% csrf_token %}
-        <button type="submit" class="btn" style="background-color: #ffc107; color: #333;" onclick="return confirm('Ви впевнені, що хочете симулювати результат цього матчу? Поточний результат (якщо є) буде перезаписано.');">
-            Симулювати результат
+        <button type="submit" class="btn btn-warning" onclick="return confirm('Ви впевнені, що хочете симулювати результат цього матчу?');">
+           <i class="fas fa-play"></i> Симулювати результат
         </button>
     </form>
-    {# --- КІНЕЦЬ ФОРМИ СИМУЛЯЦІЇ --- #}
-
 {% elif match.status == match.STATUS_FINISHED %}
-     <p><i>Матч завершено.</i></p>
-     {# Можна додати посилання для перегляду деталей статистики матчу, якщо вона є #}
+     <p><i><i class="fas fa-check-circle"></i> Матч завершено.</i></p>
 {% else %}
-     <p><i>Дії недоступні для поточного статусу матчу.</i></p>
+     <p><i><i class="fas fa-ban"></i> Дії недоступні для поточного статусу матчу.</i></p>
 {% endif %}
 
 
 <br><br>
 {% if match.tournament %}
-    <a href="{% url 'simulator:tournament_detail' match.tournament.id %}" class="btn" style="background-color: #6c757d;">До турніру</a>
+    <a href="{% url 'simulator:tournament_detail' match.tournament.id %}" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> До турніру</a>
 {% else %}
-    {# Посилання назад, якщо матч не в турнірі (наприклад, на список всіх матчів) #}
-     <a href="#" class="btn" style="background-color: #6c757d;">До списку матчів (TODO)</a>
+     <a href="{% url 'simulator:index' %}" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> На головну</a>
 {% endif %}
 
 {% endblock %}

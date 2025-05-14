@@ -3,26 +3,28 @@
 {% block title %}Головна - Симулятор спортивних змагань{% endblock %}
 
 {% block content %}
-    <h2>Вітаємо у Симуляторі Спортивних Змагань!</h2>
+    <h2><i class="fas fa-tachometer-alt"></i> Вітаємо у Симуляторі Спортивних Змагань!</h2>
     <p>Ця система дозволяє керувати подіями, командами, гравцями та симулювати змагання.</p>
 
-    <h3>Поточна статистика системи:</h3>
+    <h3><i class="fas fa-chart-bar"></i> Поточна статистика системи:</h3>
     <ul>
         <li><strong>Зареєстровано подій:</strong> {{ num_events }}</li>
         <li><strong>Зареєстровано команд:</strong> {{ num_teams }}</li>
         <li><strong>Зареєстровано гравців:</strong> {{ num_players }}</li>
     </ul>
 
-    <h3>Швидкі посилання:</h3>
+    <h3><i class="fas fa-link"></i> Швидкі посилання:</h3>
     <ul>
-        <li><a href="{% url 'simulator:event_list' %}">Переглянути події</a></li>
-        <li><a href="{% url 'simulator:tournament_list' %}">Переглянути турніри</a></li>
-        <li><a href="{% url 'simulator:team_list' %}">Переглянути команди</a></li>
-        <li><a href="{% url 'simulator:player_list' %}">Переглянути гравців</a></li>
+        <li><a href="{% url 'simulator:event_list' %}"><i class="fas fa-calendar-alt"></i> Переглянути події</a></li>
+        <li><a href="{% url 'simulator:tournament_list' %}"><i class="fas fa-trophy"></i> Переглянути турніри</a></li>
+        <li><a href="{% url 'simulator:team_list' %}"><i class="fas fa-users"></i> Переглянути команди</a></li>
+        <li><a href="{% url 'simulator:player_list' %}"><i class="fas fa-user"></i> Переглянути гравців</a></li>
     </ul>
 
-
-    <h3>Дії:</h3>
-    <a href="{% url 'simulator:event_create' %}" class="btn">Створити нову подію</a>
+    <h3><i class="fas fa-cogs"></i> Дії:</h3>
+    <a href="{% url 'simulator:event_create' %}" class="btn btn-primary"><i class="fas fa-plus"></i> Створити нову подію</a>
+    <a href="{% url 'simulator:tournament_create' %}" class="btn btn-primary ml-2"><i class="fas fa-plus"></i> Створити новий турнір</a>
+    <a href="{% url 'simulator:team_create' %}" class="btn btn-primary ml-2"><i class="fas fa-plus"></i> Створити нову команду</a>
+    <a href="{% url 'simulator:player_create' %}" class="btn btn-primary ml-2"><i class="fas fa-plus"></i> Створити нового гравця</a>
 
 {% endblock %}

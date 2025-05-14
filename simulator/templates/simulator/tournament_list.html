@@ -3,9 +3,9 @@
 {% block title %}Список Турнірів{% endblock %}
 
 {% block content %}
-<h2>Турніри</h2>
+<h2><i class="fas fa-trophy"></i> Турніри</h2>
 
-<a href="{% url 'simulator:tournament_create' %}" class="btn" style="margin-bottom: 15px;">+ Додати новий турнір</a>
+<a href="{% url 'simulator:tournament_create' %}" class="btn btn-success mb-3"><i class="fas fa-plus"></i> Додати новий турнір</a>
 {% if tournaments %}
     <table>
         <thead>
@@ -23,11 +23,11 @@
                 <td><a href="{% url 'simulator:tournament_detail' tournament.id %}">{{ tournament.name }}</a></td>
                 <td>{% if tournament.event %}<a href="{% url 'simulator:event_detail' tournament.event.id %}">{{ tournament.event.name }}</a>{% else %}N/A{% endif %}</td>
                 <td>{{ tournament.teams.count }}</td>
-                <td>{{ tournament.matches.count }}</td> {# Ефективніше передати з view #}
+                <td>{{ tournament.matches.count }}</td>
                 <td>
-                    <a href="{% url 'simulator:tournament_detail' tournament.id %}" class="btn">Деталі</a>
-                    <a href="{% url 'simulator:tournament_standings' tournament.id %}" class="btn" style="background-color: #ffc107; color: #333;">Таблиця</a>
-                    {# Додати редагування/видалення, якщо потрібно #}
+                    <a href="{% url 'simulator:tournament_detail' tournament.id %}" class="btn btn-small btn-info"><i class="fas fa-info-circle"></i> Деталі</a>
+                    <a href="{% url 'simulator:tournament_standings' tournament.id %}" class="btn btn-small btn-warning"><i class="fas fa-table"></i> Таблиця</a>
+                    <a href="{% url 'simulator:tournament_update' tournament.id %}" class="btn btn-small btn-warning"><i class="fas fa-edit"></i> Редагувати</a>
                 </td>
             </tr>
             {% endfor %}

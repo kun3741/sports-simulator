@@ -3,8 +3,8 @@
 {% block title %}Список Подій{% endblock %}
 
 {% block content %}
-<h2>Події</h2>
-<a href="{% url 'simulator:event_create' %}" class="btn" style="margin-bottom: 15px;">+ Додати нову подію</a>
+<h2><i class="fas fa-calendar-alt"></i> Події</h2>
+<a href="{% url 'simulator:event_create' %}" class="btn btn-success mb-3"><i class="fas fa-plus"></i> Додати нову подію</a>
 {% if events %}
     <table>
         <thead>
@@ -24,8 +24,8 @@
                 <td>{{ event.start_date }}</td>
                 <td>{{ event.end_date }}</td>
                 <td>
-                     <a href="{% url 'simulator:event_detail' event.id %}" class="btn">Деталі</a>
-                     <a href="{% url 'simulator:event_update' event.id %}" class="btn">Редагувати</a>
+                     <a href="{% url 'simulator:event_detail' event.id %}" class="btn btn-small btn-info"><i class="fas fa-info-circle"></i> Деталі</a>
+                     <a href="{% url 'simulator:event_update' event.id %}" class="btn btn-small btn-warning"><i class="fas fa-edit"></i> Редагувати</a>
                 </td>
             </tr>
             {% endfor %}
