@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-uw--fbk0!(_1l4^z$gse!(3h#2db9pxovao0#)jhhe8-kihpuy
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['sports-simulator.onrender.com']
+ALLOWED_HOSTS = ['https://sports-simulator.onrender.com']
 
 
 # Application definition
@@ -49,6 +49,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
 ROOT_URLCONF = 'sports_simulator_project.urls'

@@ -1,0 +1,105 @@
+Simulator signals registered.
+Found 45 test(s).
+Creating test database for alias 'default'...
+System check identified no issues (0 silenced).
+..........Сигнал post_save для Match: Матч 96af173d-7c82-4c26-b09f-71516b665932 завершено/оновлено.
+Оновлення турнірної таблиці для турніру ID: 8b10e407-1c9c-41ab-b38b-3af8cddd4f16
+Турнірна таблиця для 'Group Stage' оновлена.
+.....Сигнал post_save для Match: Матч 14576372-63f6-46a9-85cc-00b996e79a9c завершено/оновлено.
+Оновлення турнірної таблиці для турніру ID: 486fcc05-ad76-4136-b731-13b5de830628
+Турнірна таблиця для 'Service Cup' оновлена.
+Сигнал post_save для Match: Матч 201017a5-c99a-4513-9379-40c9a6c443bf завершено/оновлено.
+Оновлення турнірної таблиці для турніру ID: 486fcc05-ad76-4136-b731-13b5de830628
+Турнірна таблиця для 'Service Cup' оновлена.
+Warning: Match between Service Team A and Service Team B in Service Cup already existed.
+[RecordMatchResultCommand] Executing for match 14576372-63f6-46a9-85cc-00b996e79a9c with score 4-2
+[Command Backup] Saved state for match 14576372-63f6-46a9-85cc-00b996e79a9c: {'score1': None, 'score2': None, 'status': 'scheduled', 'match_datetime': datetime.datetime(2025, 5, 6, 15, 11, 56, 367084, tzinfo=datetime.timezone.utc)}
+Сигнал post_save для Match: Матч 14576372-63f6-46a9-85cc-00b996e79a9c завершено/оновлено.
+Оновлення турнірної таблиці для турніру ID: 486fcc05-ad76-4136-b731-13b5de830628
+Турнірна таблиця для 'Service Cup' оновлена.
+[Статистика] Оновлення для матчу 14576372-63f6-46a9-85cc-00b996e79a9c...
+Оновлено статистику (goal) для Player A1: ['games_played', 'goals']
+Оновлено статистику (played) для Player B1: ['games_played']
+[Статистика] Оновлення для матчу 14576372-63f6-46a9-85cc-00b996e79a9c завершено.
+[RecordMatchResultCommand] Successfully executed for match 14576372-63f6-46a9-85cc-00b996e79a9c
+[RecordMatchResultCommand] Undoing for match 14576372-63f6-46a9-85cc-00b996e79a9c
+[RecordMatchResultCommand] Warning: Player stats undo is not fully implemented.
+[Command Restore] Restored state for match 14576372-63f6-46a9-85cc-00b996e79a9c: {'score1': None, 'score2': None, 'status': 'scheduled', 'match_datetime': datetime.datetime(2025, 5, 6, 15, 11, 56, 367084, tzinfo=datetime.timezone.utc)}
+Турнірна таблиця для 'Service Cup' оновлена.
+[RecordMatchResultCommand] Successfully undone for match 14576372-63f6-46a9-85cc-00b996e79a9c
+.[SimulateMatchResultCommand] Executing for match 6812097a-e68d-42b4-81a4-40360387b8fb
+[Command Backup] Saved state for match 6812097a-e68d-42b4-81a4-40360387b8fb: {'score1': None, 'score2': None, 'status': 'scheduled', 'match_datetime': datetime.datetime(2025, 5, 2, 15, 11, 56, 378582, tzinfo=datetime.timezone.utc)}
+Симуляція матчу: Service Team B vs Service Team C
+Результат симуляції: 2 - 1
+Сигнал post_save для Match: Матч 6812097a-e68d-42b4-81a4-40360387b8fb завершено/оновлено.
+Оновлення турнірної таблиці для турніру ID: 486fcc05-ad76-4136-b731-13b5de830628
+Турнірна таблиця для 'Service Cup' оновлена.
+Результат 2-1 для матчу 6812097a-e68d-42b4-81a4-40360387b8fb записано.
+[Статистика] Оновлення для матчу 6812097a-e68d-42b4-81a4-40360387b8fb...
+Оновлено статистику (goal) для Player B1: ['games_played', 'goals']
+Оновлено статистику (goal) для Player B1: ['games_played', 'goals']
+[Статистика] Оновлення для матчу 6812097a-e68d-42b4-81a4-40360387b8fb завершено.
+[SimulateMatchResultCommand] Successfully executed for match 6812097a-e68d-42b4-81a4-40360387b8fb. Result: (2, 1)
+[SimulateMatchResultCommand] Undoing for match 6812097a-e68d-42b4-81a4-40360387b8fb
+[SimulateMatchResultCommand] Warning: Player stats undo is not fully implemented.
+[Command Restore] Restored state for match 6812097a-e68d-42b4-81a4-40360387b8fb: {'score1': None, 'score2': None, 'status': 'scheduled', 'match_datetime': datetime.datetime(2025, 5, 2, 15, 11, 56, 378582, tzinfo=datetime.timezone.utc)}
+Турнірна таблиця для 'Service Cup' оновлена.
+[SimulateMatchResultCommand] Successfully undone for match 6812097a-e68d-42b4-81a4-40360387b8fb
+.Генерація розкладу за стратегією: RoundRobinStrategy
+Створено матч: Service Team A vs Service Team B (2025-07-10 12:00) для турніру Match Gen Test
+.Симуляція матчу: Service Team B vs Service Team C
+Результат симуляції: 4 - 3
+..--- Генерація звіту: Звіт про статистику гравців ---
+--- Звіт згенеровано ---
+.--- Генерація звіту: Звіт про результати матчів турніру ---
+--- Звіт згенеровано ---
+.Генерація розкладу за стратегією: KnockoutStrategy
+Knockout: Згенеровано 2 матчів першого раунду.
+.Генерація розкладу за стратегією: RoundRobinStrategy
+..[RecordMatchResultCommand] Executing for match e57cb81f-901d-42fe-b301-0ee58d75bee2 with score 2-1
+[Command Backup] Saved state for match e57cb81f-901d-42fe-b301-0ee58d75bee2: {'score1': None, 'score2': None, 'status': 'scheduled', 'match_datetime': datetime.datetime(2025, 5, 2, 15, 11, 56, 424092, tzinfo=datetime.timezone.utc)}
+Сигнал post_save для Match: Матч e57cb81f-901d-42fe-b301-0ee58d75bee2 завершено/оновлено.
+Оновлення турнірної таблиці для турніру ID: 3332f615-81d3-4745-8329-bbd5a52ff3b6
+Турнірна таблиця для 'Signal Tourn' оновлена.
+[Статистика] Оновлення для матчу e57cb81f-901d-42fe-b301-0ee58d75bee2...
+[Статистика] Оновлення для матчу e57cb81f-901d-42fe-b301-0ee58d75bee2 завершено.
+[RecordMatchResultCommand] Successfully executed for match e57cb81f-901d-42fe-b301-0ee58d75bee2
+.Сигнал post_save для Match: Матч 3cb9e7b7-ac82-4d4a-85f9-213d89d17309 завершено/оновлено.
+Оновлення турнірної таблиці для турніру ID: cf021537-2718-4aed-b492-3543982917ed
+Турнірна таблиця для 'View Tournament 1' оновлена.
+Warning: Match between View Team 1 and View Team 2 in View Tournament 1 already existed.
+.......Warning: Match between View Team 1 and View Team 2 in View Tournament 1 already existed.
+[RecordMatchResultCommand] Executing for match 3cb9e7b7-ac82-4d4a-85f9-213d89d17309 with score 5-1
+[Command Backup] Saved state for match 3cb9e7b7-ac82-4d4a-85f9-213d89d17309: {'score1': None, 'score2': None, 'status': 'scheduled', 'match_datetime': datetime.datetime(2025, 5, 4, 15, 11, 56, 485949, tzinfo=datetime.timezone.utc)}
+Сигнал post_save для Match: Матч 3cb9e7b7-ac82-4d4a-85f9-213d89d17309 завершено/оновлено.
+Оновлення турнірної таблиці для турніру ID: cf021537-2718-4aed-b492-3543982917ed
+Турнірна таблиця для 'View Tournament 1' оновлена.
+[Статистика] Оновлення для матчу 3cb9e7b7-ac82-4d4a-85f9-213d89d17309...
+Оновлено статистику (played) для View Player 1: ['games_played']
+[Статистика] Оновлення для матчу 3cb9e7b7-ac82-4d4a-85f9-213d89d17309 завершено.
+[RecordMatchResultCommand] Successfully executed for match 3cb9e7b7-ac82-4d4a-85f9-213d89d17309
+.Warning: Match between View Team 1 and View Team 2 in View Tournament 1 already existed.
+[SimulateMatchResultCommand] Executing for match 3cb9e7b7-ac82-4d4a-85f9-213d89d17309
+[Command Backup] Saved state for match 3cb9e7b7-ac82-4d4a-85f9-213d89d17309: {'score1': None, 'score2': None, 'status': 'scheduled', 'match_datetime': datetime.datetime(2025, 5, 11, 15, 11, 56, 502003, tzinfo=datetime.timezone.utc)}
+Симуляція матчу: View Team 1 vs View Team 2
+Результат симуляції: 5 - 0
+Сигнал post_save для Match: Матч 3cb9e7b7-ac82-4d4a-85f9-213d89d17309 завершено/оновлено.
+Оновлення турнірної таблиці для турніру ID: cf021537-2718-4aed-b492-3543982917ed
+Турнірна таблиця для 'View Tournament 1' оновлена.
+Результат 5-0 для матчу 3cb9e7b7-ac82-4d4a-85f9-213d89d17309 записано.
+[Статистика] Оновлення для матчу 3cb9e7b7-ac82-4d4a-85f9-213d89d17309...
+Оновлено статистику (goal) для View Player 1: ['games_played', 'goals']
+Оновлено статистику (goal) для View Player 1: ['games_played', 'goals']
+Оновлено статистику (goal) для View Player 1: ['games_played', 'goals']
+Оновлено статистику (goal) для View Player 1: ['games_played', 'goals']
+Оновлено статистику (goal) для View Player 1: ['games_played', 'goals']
+[Статистика] Оновлення для матчу 3cb9e7b7-ac82-4d4a-85f9-213d89d17309 завершено.
+[SimulateMatchResultCommand] Successfully executed for match 3cb9e7b7-ac82-4d4a-85f9-213d89d17309. Result: (5, 0)
+........Генерація розкладу за стратегією: RoundRobinStrategy
+Створено матч: View Team 1 vs View Team 2 (2025-09-01 12:00) для турніру Gen Sched Test Tourn View
+...
+----------------------------------------------------------------------
+Ran 45 tests in 0.229s
+
+OK
+Destroying test database for alias 'default'...
