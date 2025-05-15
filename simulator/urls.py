@@ -5,6 +5,10 @@ app_name = 'simulator'
 
 urlpatterns = [
     path('', views.index, name='index'),
+
+    path('populate-data/', views.populate_data_view, name='populate_data'),
+    path('delete-data/', views.delete_data_view, name='delete_data'),
+
     path('events/', views.event_list, name='event_list'),
     path('events/create/', views.event_create, name='event_create'),
     path('events/<uuid:event_id>/', views.event_detail, name='event_detail'),

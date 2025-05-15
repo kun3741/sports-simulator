@@ -1,10 +1,11 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.core.exceptions import ValidationError
-from django.http import HttpResponse, Http404, HttpResponseForbidden
+from django.http import HttpResponse, Http404, HttpResponseForbidden, HttpResponseRedirect
 from django.urls import reverse, reverse_lazy
 from django.contrib import messages
 from django.utils import timezone
 from django.db import IntegrityError
+from django.core.management import call_command
 
 from .models import Event, Team, Player, Tournament, Match, PlayerStatistics
 from .forms import EventForm, TeamForm, PlayerForm, MatchResultForm, TournamentForm, MatchForm
@@ -24,6 +25,26 @@ def index(request):
         'num_players': num_players,
     }
     return render(request, 'simulator/index.html', context=context)
+
+def populate_data_view(request):
+    if request.method == 'POST':
+        try:
+            call_command('populate_data', '--generate')
+            messages.success(request, "Тестові дані успішно згенеровано!")
+        except Exception as e:
+            messages.error(request, f"Помилка під час генерації даних: {e}")
+        return HttpResponseRedirect(reverse('simulator:index'))
+    return redirect('simulator:index')
+
+def delete_data_view(request):
+    if request.method == 'POST':
+        try:
+            call_command('populate_data', '--delete')
+            messages.success(request, "Тестові дані успішно видалено!")
+        except Exception as e:
+            messages.error(request, f"Помилка під час видалення даних: {e}")
+        return HttpResponseRedirect(reverse('simulator:index'))
+    return redirect('simulator:index')
 
 def event_list(request):
     events = Event.objects.order_by('-start_date')
@@ -354,6 +375,7 @@ def match_simulate(request, match_id):
             match = Match.objects.get(pk=match_id)
          except Match.DoesNotExist:
              match = None
+
 
     if match and match.tournament:
         return redirect('simulator:tournament_detail', tournament_id=match.tournament.id)
